@@ -3,6 +3,7 @@
     "@google-cloud/local-auth": "^2.1.0",
     "dotenv": "^16.0.3",
     "googleapis": "^105.0.0",
+    "html-to-text": "^9.0.3",
     "openai": "^3.1.0"
   }
 }

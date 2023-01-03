@@ -5,7 +5,7 @@ class GmailHandler {
      * TODO: convert large number of parameters into an object
      * TODO: rename gmailAPI, gmailAuthenticate, etc, with google*, which is more precise
      */
-    constructor(gmailAPI, gmailAuthenticate, gmailTokenPath, gmailCredentialsPath, messagesDirectoryPath, fs, fsp ) {
+    constructor(gmailAPI, gmailAuthenticate, gmailTokenPath, gmailCredentialsPath, messagesDirectoryPath, fs, fsp, h2t) {
       // googleAPI is an object required from googleapis module
       this.gmailAPI = gmailAPI;
       
@@ -40,6 +40,7 @@ class GmailHandler {
       // will be used for multiple purposes, like reading credentiales, writing files with emails, etc
       this.fs = fs;
       this.fsp = fsp;
+      this.h2t = h2t;
 
     }
   
@@ -211,7 +212,7 @@ async saveSnippetsAndExtractSubjectsFromEmails(messages) {
     const gmail = this.prepareGmail();
     let emailSubjects = [];
     
-    // create the directory in which emails and subjects will be stored
+    // create the directory in which all emails and subjects will be stored
     if (!this.fs.existsSync(this.messagesDirectoryPath)){
       this.fs.mkdirSync(this.messagesDirectoryPath);
     }
@@ -222,6 +223,7 @@ async saveSnippetsAndExtractSubjectsFromEmails(messages) {
         var messageContent = await gmail.users.messages.get({
           userId: 'me',
           id: messages[i].id,
+          format : 'full'
         });
 
         let messageHeaders = messageContent.data.payload.headers;
@@ -231,7 +233,10 @@ async saveSnippetsAndExtractSubjectsFromEmails(messages) {
             }
         });
 
-        await this.fsp.writeFile(this.emailNameOnFS(messages[i]),messageContent.data.snippet);
+        // Remember that messages[i] only contains and id and thread id, as returned by gmail LIST API
+        // on the other hand, messageContent, does have everything related to that email, as per the GET method
+        this.saveEmailOnFS(messages[i], messageContent);
+        
       }      
     }
 
@@ -242,28 +247,65 @@ async saveSnippetsAndExtractSubjectsFromEmails(messages) {
 
   }
 
+  async saveEmailOnFS(message, messageContent){
+    try {
+      
+      if(!this.emailDirectoryExists(message)){
+        this.fs.mkdirSync(this.emailDirectoryOnFS(message));
+      }
+      
+      const base64EncodedBodyData = messageContent.data.payload.body.data;
+            
+      if(base64EncodedBodyData){
+        const decodedData = Buffer.from(base64EncodedBodyData, 'base64').toString('utf8');
+        const decodedDataPlainText = this.h2t.htmlToText(decodedData, {
+          wordwrap: 130
+        });
+        console.log(`Saving entire e-mail: ${message.id}.txt`);
+        await this.fsp.writeFile(this.emailNameOnFS(message), decodedDataPlainText);
+      }else{
+        console.log(`Body is empty - Saving Email Snippet Only: ${message.id}.txt`);
+        await this.fsp.writeFile(this.emailNameOnFS(message), messageContent.data.snippet);
+      }
+      
+
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+
+  /**
+ * Check if a certain email already exists in the filesystem
+ */
+  emailDirectoryExists(message){
+    let emailDirectory = false;
+    emailDirectory = this.fs.existsSync(this.emailDirectoryOnFS(message));
+    return emailDirectory;
+}
+  
+
   /**
  * Check if a certain email already exists in the filesystem
  */
     emailExists(message){
-     
       let emailExists = false;
-      try {
-        this.fs.accessSync(this.emailNameOnFS(message), this.fs.constants.R_OK | this.fs.constants.W_OK);
-        emailExists = true;
-      } catch (err) {
-        // nothing to be done, if the emails does not exist the handler will attempt to fetch it
-        // is there a better way to do this rathen than capturing an exceptions and doing nothing?
-      }
-
-    return emailExists;
+      emailExists = this.fs.existsSync(this.emailNameOnFS(message));
+      return emailExists;
   }
 
+ /**
+ * Given a message, return its directory on filesystem, used for read/write
+ */
+    emailDirectoryOnFS(message){
+      return `${this.messagesDirectoryPath}/id-${message.id}`;
+    }
+
   /**
- * Given a message, return its name on filesystem, used for read/write
+  * Given a message, return its name on filesystem, used for read/write
  */
     emailNameOnFS(message){
-      return `${this.messagesDirectoryPath}/id-${message.id}`
+      return this.emailDirectoryOnFS(message) + `/original-${message.id}.txt`;
     }
   
 }
