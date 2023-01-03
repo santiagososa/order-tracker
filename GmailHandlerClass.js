@@ -30,6 +30,9 @@ class GmailHandler {
       // gmailClient will be returned by gmail API after authorization
       this.gmailClient = null;
 
+      // when listing email, this token will contain the token of the next page
+      this.gmailNextPageToken = null;
+
       // messagesDirectoryPath contains the path in which email snippets will be stored
       this.messagesDirectoryPath = messagesDirectoryPath;
 
@@ -157,10 +160,8 @@ async listLabels() {
 async listPurchaseRelatedEmails() {
 
     const gmail = this.prepareGmail();
-    const res = await gmail.users.messages.list({
-      userId: 'me',
-      q : this.gmailQuery,
-    });
+    const listParameters = this.prepareListParameters();
+    const res = await gmail.users.messages.list(listParameters);
 
     const messages = res.data.messages;
     if (!messages || messages.length === 0) {
@@ -168,49 +169,101 @@ async listPurchaseRelatedEmails() {
       return null;
     }
 
+    // set the next page token for future calls to the API
+    this.gmailNextPageToken = res.data.nextPageToken;
+
     return messages;
 
   }
 
+  /**
+ * Prepares parameters to invoke list, basically adds next page token if exists
+ * If null, object won't travel (as opossed to travelling being null)
+ */
+  
+  prepareListParameters (){
+
+    let listParameters = {
+      userId: 'me',
+      q : this.gmailQuery,
+    }
+
+    if(this.gmailNextPageToken){
+      listParameters.pageToken = this.gmailNextPageToken;
+    }
+
+    console.log("Listing Page with parameters: ")
+    console.log(listParameters)
+
+    return listParameters;
+  }
+
+
 /**
  * Lists purchase related e-mails in the user's account.
- * TODO: extract the hard coded query into a parameter
- * TODO: remove file writing from this method
+ * If email is already found on the FS, it won't be fetched again
+ * TODO: remove file writing from this method, and separate logic somewhere else
  */
 
 async saveSnippetsAndExtractSubjectsFromEmails(messages) {
 
     const gmail = this.prepareGmail();
-    var emailSubjects = [];
+    let emailSubjects = [];
     
     // create the directory in which emails and subjects will be stored
     if (!this.fs.existsSync(this.messagesDirectoryPath)){
-      fs.mkdirSync(this.messagesDirectoryPath);
+      this.fs.mkdirSync(this.messagesDirectoryPath);
     }
 
     for (let i = 0; i < messages.length; i++){
-        
-        var messageContent = await gmail.users.messages.get({
-            userId: 'me',
-            id: messages[i].id,
-          });
-  
-          var messageHeaders = messageContent.data.payload.headers;
-          messageHeaders.forEach((header) => {
-              if(header.name === "Subject"){
-                  emailSubjects.push({id: messages[i].id, subject: header.value});
-                  console.log(emailSubjects[i]);
-              }
-          });
 
-          await this.fsp.writeFile(`${this.messagesDirectoryPath}/id-${messages[i].id}`,messageContent.data.snippet);
+      if(!this.emailExists(messages[i])){
+        var messageContent = await gmail.users.messages.get({
+          userId: 'me',
+          id: messages[i].id,
+        });
+
+        let messageHeaders = messageContent.data.payload.headers;
+        messageHeaders.forEach((header) => {
+            if(header.name === "Subject"){
+                emailSubjects.push({id: messages[i].id, subject: header.value});
+            }
+        });
+
+        await this.fsp.writeFile(this.emailNameOnFS(messages[i]),messageContent.data.snippet);
+      }      
     }
 
-    await this.fsp.writeFile(`${this.messagesDirectoryPath}/subject-array`, JSON.stringify(emailSubjects));
+    // TODO: these line of code was helfull when developing, unlikely to be needed. Eliminate definetely?
+    //await this.fsp.writeFile(`${this.messagesDirectoryPath}/subject-array`, JSON.stringify(emailSubjects));
    
     return emailSubjects;
 
   }
+
+  /**
+ * Check if a certain email already exists in the filesystem
+ */
+    emailExists(message){
+     
+      let emailExists = false;
+      try {
+        this.fs.accessSync(this.emailNameOnFS(message), this.fs.constants.R_OK | this.fs.constants.W_OK);
+        emailExists = true;
+      } catch (err) {
+        // nothing to be done, if the emails does not exist the handler will attempt to fetch it
+        // is there a better way to do this rathen than capturing an exceptions and doing nothing?
+      }
+
+    return emailExists;
+  }
+
+  /**
+ * Given a message, return its name on filesystem, used for read/write
+ */
+    emailNameOnFS(message){
+      return `${this.messagesDirectoryPath}/id-${message.id}`
+    }
   
 }
 
