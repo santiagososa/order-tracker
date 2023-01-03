@@ -5,7 +5,7 @@ class GmailHandler {
      * TODO: convert large number of parameters into an object
      * TODO: rename gmailAPI, gmailAuthenticate, etc, with google*, which is more precise
      */
-    constructor(gmailAPI, gmailAuthenticate, gmailTokenPath, gmailCredentialsPath, messagesDirectoryPath, fs, fsp, h2t) {
+    constructor(gmailAPI, gmailAuthenticate, gmailTokenPath, gmailCredentialsPath, messagesDirectoryPath, fs, fsp) {
       // googleAPI is an object required from googleapis module
       this.gmailAPI = gmailAPI;
       
@@ -40,7 +40,6 @@ class GmailHandler {
       // will be used for multiple purposes, like reading credentiales, writing files with emails, etc
       this.fs = fs;
       this.fsp = fsp;
-      this.h2t = h2t;
 
     }
   
@@ -233,6 +232,7 @@ async saveSnippetsAndExtractSubjectsFromEmails(messages) {
             }
         });
 
+
         // Remember that messages[i] only contains and id and thread id, as returned by gmail LIST API
         // on the other hand, messageContent, does have everything related to that email, as per the GET method
         this.saveEmailOnFS(messages[i], messageContent);
@@ -254,21 +254,28 @@ async saveSnippetsAndExtractSubjectsFromEmails(messages) {
         this.fs.mkdirSync(this.emailDirectoryOnFS(message));
       }
       
-      const base64EncodedBodyData = messageContent.data.payload.body.data;
-            
-      if(base64EncodedBodyData){
-        const decodedData = Buffer.from(base64EncodedBodyData, 'base64').toString('utf8');
-        const decodedDataPlainText = this.h2t.htmlToText(decodedData, {
-          wordwrap: 130
-        });
-        console.log(`Saving entire e-mail: ${message.id}.txt`);
-        await this.fsp.writeFile(this.emailNameOnFS(message), decodedDataPlainText);
-      }else{
+      // sometimes body does not have parts, just save a snippet then
+      // also, the mapping on the else is mapping and filtering at the same time
+      // first find the part containing text/plain, then return it decoded
+      // other parts will be maped as empty string
+      // finally, convert array into string using join
+      // TODO: might it be the case that some email comes with relevant html text and not plain text?
+      // if so, we are now losing it, refactor to check both mimeTypes
+
+      if(!messageContent.data.payload.parts){
         console.log(`Body is empty - Saving Email Snippet Only: ${message.id}.txt`);
         await this.fsp.writeFile(this.emailNameOnFS(message), messageContent.data.snippet);
-      }
-      
+      }else{
+        const decodedPlainText = messageContent.data.payload.parts.map( part => {
+          if(part.mimeType === 'text/plain'){
+            return Buffer.from(part.body.data, 'base64').toString();
+          }
+          return '';
+        }).join('');
+        console.log(`Saving entire e-mail: ${message.id}.txt`);
+        await this.fsp.writeFile(this.emailNameOnFS(message), decodedPlainText);
 
+      }
     } catch (error) {
       console.log(error);
     }

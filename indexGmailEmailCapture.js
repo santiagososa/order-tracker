@@ -20,10 +20,6 @@ const gmailCredentialsPath = path.join(process.cwd(), 'credentials.json');
 // messagesDirectory contains the path in which email snippets will be stored
 const messagesDirectory = path.join(process.cwd(), 'messages-directory');
 
-// will help convert gmail emails into text, as I have not been able to retrieve it in plain text directly
-// TODO: see if there is a better way
-const h2t = require('html-to-text');
-
 
 const GmailHandler = require('./GmailHandlerClass');
 
@@ -41,7 +37,7 @@ async function haveFun(gmailHandler, numberOfPages){
   return;
 }
 
-const gmailHandler = new GmailHandler(google, authenticate, gmailTokenPath, gmailCredentialsPath, messagesDirectory, fs, fsp, h2t);
+const gmailHandler = new GmailHandler(google, authenticate, gmailTokenPath, gmailCredentialsPath, messagesDirectory, fs, fsp);
 // Number of email pages to be fetched default to 5, but can be send as bash parameter
 const numberOfPages = process.argv[2] ? process.argv[2] : 5 ;
 haveFun(gmailHandler, numberOfPages);
