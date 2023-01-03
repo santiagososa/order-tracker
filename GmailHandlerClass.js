@@ -111,9 +111,10 @@ class GmailHandler {
 
       await this.fs.writeFile(this.gmailTokenPath, payload, function(err) {
         if (err) {
+          console.log('Cannot save credentials');
           console.error(err);
         } else {
-          console.log('File written successfully');
+          console.log('Credentials saved successfully');
         }
       });
 

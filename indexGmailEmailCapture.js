@@ -27,7 +27,7 @@ async function haveFun(gmailHandler, numberOfPages){
   await gmailHandler.authorize();
 
   for (let i = 0; i < numberOfPages; i++){
-    console.log("Listing page: " + i);
+    console.log("Listing Page: " + i);
     const messages = await gmailHandler.listPurchaseRelatedEmails();
     const subjects = await gmailHandler.saveSnippetsAndExtractSubjectsFromEmails(messages);
     console.log(subjects);
@@ -37,7 +37,8 @@ async function haveFun(gmailHandler, numberOfPages){
 }
 
 const gmailHandler = new GmailHandler(google, authenticate, gmailTokenPath, gmailCredentialsPath, messagesDirectory, fs, fsp);
-const numberOfPages = 12;
+// Number of email pages to be fetched default to 10, but can be send as bash parameter
+const numberOfPages = process.argv[2] ? process.argv[2] : 10 ;
 haveFun(gmailHandler, numberOfPages);
 
 /** 
