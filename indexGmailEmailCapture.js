@@ -1,3 +1,8 @@
+// A simple script to download Gmail emails into the filesystem
+// Used hand in hand with ExtractRelevantInfo script, that uses open AI
+// to extract relevant info from your emails
+
+
 // Require filesystem related objects
 require('dotenv').config();
 const fs = require('fs');
@@ -9,8 +14,6 @@ const process = require('process');
 const {authenticate} = require('@google-cloud/local-auth');
 const {google} = require('googleapis');
 
-// Require OpenAI API related objects
-const { Configuration, OpenAIApi } = require("openai");
 
 // Locate multiple files for the Gmail Handler. TODO: take all these to a configuration file
 // scopes defined according to the API
@@ -41,21 +44,3 @@ const gmailHandler = new GmailHandler(google, authenticate, gmailTokenPath, gmai
 // Number of email pages to be fetched default to 5, but can be send as bash parameter
 const numberOfPages = process.argv[2] ? process.argv[2] : 5 ;
 haveFun(gmailHandler, numberOfPages);
-
-/** 
-const configuration = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-const openai = new OpenAIApi(configuration);
-async function classifyEmailsSubjects(subjects) {
-    
-  const res = await openai.createCompletion({
-    model: "text-davinci-003",
-    prompt: "Classify the following elements for me:" + JSON.stringify(subjects),
-  });
-
-  console.log(res.data.choices);
-  return res.data;
-}*/
-
-
