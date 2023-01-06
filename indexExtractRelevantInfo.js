@@ -5,7 +5,6 @@ const path = require('path');
 const { Configuration, OpenAIApi } = require("openai");
 const { Console } = require('console');
 
-MAX_ESTIMATED_WORDS = 750;
   
 function testPrompt(){
     return "Classify the following text for me: " +
@@ -33,11 +32,9 @@ async function createCompletion(prompt) {
 
     const promptLength = prompt.toString("utf-8").length;
     
-    // TODO: implement a tokenizer as to do this validation more precise
-    if( promptLength > MAX_ESTIMATED_WORDS){
-        console.log("Request likely to fail given length of prompt: " + promptLength);
-    }
-
+    // TODO: by using a tokenizer, we could check MAX tokens accepted by chat GPT
+    // and avoid an unnecesary API call - not a priority now
+    
     try {
         res = await openai.createCompletion({
         model: "text-davinci-003",
@@ -45,7 +42,11 @@ async function createCompletion(prompt) {
         });
         
     } catch (error) {
-       console.error("Error status: " + error.response.status);
+        if(error.response.status){
+            console.error("Error status: " + error.response.status);
+        }else{
+            console.error("Error without Status - Response: " + error.response);
+        }
        return error;
     }
 
@@ -59,9 +60,14 @@ async function attemptCompletion(callback, text) {
     let numberOfAttempts = 3;
     let callbackResult = null;
     let timeout = 10000;
-  
+
+    // attempt to do the request multiple times
     while( numberOfAttempts > 0 && !hasFinishedWithout429 ){
 
+        // TODO: using a mutex, we could control between threads if one thread has already
+        // thrown 429, and avoid 1 unnecesary API call per thread - not a priority now
+        
+        //attempt to call API
         callbackResult = await callback(text);
         
         //is this a 429 error? If so, retry
@@ -173,5 +179,3 @@ traverseFilesystem("./messages-directory",function(text){
     const prompt = classifyPrompt(text);
     return createCompletion(prompt);
 });
- 
-//createCompletion(testPrompt());
