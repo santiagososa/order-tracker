@@ -73,6 +73,14 @@ OpenAI and GPT are ALL about finetunning your Prompts. Here are some examples fo
 - Extract relevant information from this text, and return it to me in a JSON object
 - Perform named entity recognition on this text:
 
+I'll share with you how to play without writing any code, and just using *Playground*. Let's see what to expect when using such prompts on a random puchase e-mail from Coto (a supermarket chain from Argentina). Allow me to share with you my summer shopping purchase :)
+
+![image](https://user-images.githubusercontent.com/2787291/211051720-e5889f06-5a9e-4314-b36d-5ee9094a0b2e.png)
+
+Look for a similar e-mail in your inbox (can be any kind of purchase, doesn't have to be supermarket, can be a playstation 5 videogame, or a D2C purchase, you name it). Copy and paste the email content (html or plain text, you decide, only consideration is not to exceed 2,000 tokens, which is equivalent to something between ~750).
+
+Once in playground, write the Prompt (can use example above plus your email text), and see what returns. See below what I've got for my own purchase:
+
 Have fun, just like I did :)
 
 
