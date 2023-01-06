@@ -1,5 +1,5 @@
 # order-tracker
-**Short version:** an experiment done during holidays that might convert into a powerful order tracker some day (toying around with GPT).
+**Short version:** an experiment done during holidays that might convert into a powerful order tracker some day (toying with with GPT).
 
 **Long version** (including a personal note)
 
@@ -47,7 +47,7 @@ Finally, there is a script called *indexExtractRelevantInfo.js*, which invokes G
 that generate the prompts and call it as a callback (if you don't know what Prompts are, read OpenAI documentation, as everything is achieved through Prompts). Also, lot's of improvements need to be done on this script (i.e: building a class, etc)
 but the most urgent one needed is a better handling system to manage http error 429 (i.e: to many requests), as what we have right now won't work for large number of requests. An easier fix is to just wait a couple of minutes, and call the script again.
 
-Besides all these smaller fixes, it would be great to migrate all this to typescript, write a webapp using Nest.js or similar, and a simple React application to show results (as everything has been done through the command line for now).
+Besides all these smaller fixes, it would be great to migrate all this to typescript, write a webapp using Nest.js or similar, and a simple React application to show results (as everything has been done through the command line for now), and add testing.
 
 ## How to install / run?
 Clone the repo and run npm install to install every dependency.
