@@ -43,7 +43,7 @@ be enough for the prototype.
 There is an auxiliar script called *indexWordEstimator.js*, which creates a histogram of emails downloaded. This is usefull to estimate the costs of invoking GPT API (which can be very expensive, to the point 
 it could kill the project feasibility unless ultra optimized), as well as provide a high level idea of size of emails (considering that GPT does not accept more than 2,000 tokens per API request).
 
-Finally, there is a script called *indexExtractRelevantInfo.js*, which invokes GPT foreach file (i.e: email downloaded) and creates a new file with GPT answer. You can play with different Prompts, by simply writing functions
+Finally, there is a script called *indexExtractRelevantInfo.js*, which invokes GPT foreach file (i.e: email downloaded) and creates a new file with GPT's answer. You can play with different Prompts, by simply writing functions
 that generate the prompts and call it as a callback (if you don't know what Prompts are, read OpenAI documentation, as everything is achieved through Prompts). Also, lot's of improvements need to be done on this script (i.e: building a class, etc)
 but the most urgent one needed is a better handling system to manage http error 429 (i.e: to many requests), as what we have right now won't work for large number of requests. An easier fix is to just wait a couple of minutes, and call the script again.
 
@@ -52,8 +52,8 @@ Besides all these smaller fixes, it would be great to migrate all this to typesc
 ## How to install / run?
 Clone the repo and run npm install to install every dependency.
 
-You will need credentials for Gmail API (you can use mine if you want, send me a slack message, but I will have to manually add your email as a testing user, as the app has not been published; alternatively, create your own App on Google console, following instructions here):
-https://developers.google.com/workspace/guides/auth-overview. You will have to write your credentials on credentials.json
+You will need credentials for Gmail API (you can use mine if you want, send me a slack message, but I will have to manually add your email as a testing user, as the app has not been published; alternatively, create your own App on Google console, following instructions here:
+https://developers.google.com/workspace/guides/auth-overview). You will have to write your credentials on credentials.json
 
 Also, you will need OpenAI credentials (instructions on how to get those on their main site). Their key should be placed on your .env file, and you should be good to go.
 
