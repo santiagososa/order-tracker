@@ -60,6 +60,11 @@ Also, you will need OpenAI credentials (instructions on how to get those on thei
 With that in mind, just call the scripts on the command line using node. If you'd like to play around, start building prompts and see what you get. You'll find opportunities to improve the entire file handling and API handling.
 Feel free to go ahead and contribute. Also, you'll learn a lot about using Prompts with real data from your email.
 
+### IMPORTANT
+OpenAI es expensive, and running this script with hundreads of emails should be controlled carefully. If you want to play with the free trial, you can do it, but be aware that you'll probably run out of the ~US$18 free credit very fast. If you add a credit card, you should be very conscious about how and when to call the API.
+
+Alternatively, if you'd like to experiment in a more manual way, you can always use *GmailHandler* to download emails, and then do some manual GPT experimentation using OpenAI playground, linked here: https://beta.openai.com/playground
+
 ## Some example Prompts you can test:
 OpenAI and GPT are ALL about finetunning your Prompts. Here are some examples for your inspiration:
 - Is this a purchase related e-mail? Text: 
