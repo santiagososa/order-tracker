@@ -63,7 +63,9 @@ Feel free to go ahead and contribute. Also, you'll learn a lot about using Promp
 ### IMPORTANT
 OpenAI es expensive, and running this script with hundreads of emails should be controlled carefully. If you want to play with the free trial, you can do it, but be aware that you'll probably run out of the ~US$18 free credit very fast. If you add a credit card, you should be very conscious about how and when to call the API.
 
-Alternatively, if you'd like to experiment in a more manual way, you can always use *GmailHandler* to download emails, and then do some manual GPT experimentation using OpenAI playground, linked here: https://beta.openai.com/playground
+Alternatively, if you'd like to experiment in a more manual way, you can always use *GmailHandler* script to download emails (or even more manually, simply go to your inbox and copy/past emails) and then do some manual GPT experimentation using OpenAI playground, linked here: https://beta.openai.com/playground 
+
+Next section explains how to do this.
 
 ## Some example Prompts you can test:
 OpenAI and GPT are ALL about finetunning your Prompts. Here are some examples for your inspiration:
@@ -73,16 +75,15 @@ OpenAI and GPT are ALL about finetunning your Prompts. Here are some examples fo
 - Extract relevant information from this text, and return it to me in a JSON object
 - Perform named entity recognition on this text:
 
-I'll share with you how to play without writing any code, and just using *Playground*. Let's see what to expect when using such prompts on a random puchase e-mail from Coto (a supermarket chain from Argentina). Allow me to share with you my summer shopping purchase :)
+I'll share with you how to play without writing any code and just using *Playground*. Let's see what to expect when using such prompts on a random puchase e-mail from Coto (a supermarket chain from Argentina). Allow me to share with you my summer shopping purchase :)
 
 ![image](https://user-images.githubusercontent.com/2787291/211051720-e5889f06-5a9e-4314-b36d-5ee9094a0b2e.png)
 <img width="626" alt="image" src="https://user-images.githubusercontent.com/2787291/211052916-2344ee7d-fc98-45a7-a604-f09ae0ebb79f.png">
 
 
-Look for a similar e-mail in your inbox (can be any kind of purchase, doesn't have to be supermarket, can be a playstation 5 videogame, or a D2C purchase, you name it). Copy and paste the email content (html or plain text, you decide, only consideration is not to exceed 2,000 tokens, which is equivalent to something between ~750).
+Look for a similar e-mail in your inbox (can be any kind of purchase, doesn't have to be supermarket, can be a playstation 5 videogame, or a D2C purchase, you name it). Copy and paste the email content (html or plain text, you decide, only consideration is not to exceed 2,000 tokens, which is equivalent to something close to ~750).
 
-Once in playground, write the Prompt, and see what returns. See below what I've got for my own purchase, on some example Prompts:
-
+Once in playground, write the Prompt, and see what returns.
 
 Have fun, just like I did :)
 
