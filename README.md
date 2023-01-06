@@ -81,9 +81,9 @@ I'll share with you how to play without writing any code and just using *Playgro
 <img width="626" alt="image" src="https://user-images.githubusercontent.com/2787291/211052916-2344ee7d-fc98-45a7-a604-f09ae0ebb79f.png">
 
 
-Look for a similar e-mail in your inbox (can be any kind of purchase, doesn't have to be supermarket, can be a playstation 5 videogame, or a D2C purchase, you name it). Copy and paste the email content (html or plain text, you decide, only consideration is not to exceed 2,000 tokens, which is equivalent to something close to ~750).
+Look for a similar e-mail in your inbox (can be any kind of purchase, doesn't have to be supermarket, can be a playstation 5 videogame, or a D2C purchase, you name it). Copy and paste the email content (html or plain text, you decide, only consideration is not to exceed 2,000 tokens, which is equivalent to something close to ~750). Once in playground, write the Prompt, and see what returns.
 
-Once in playground, write the Prompt, and see what returns.
+I won't share the answers here, up to you to be curious and do it :)
 
 Have fun, just like I did :)
 
